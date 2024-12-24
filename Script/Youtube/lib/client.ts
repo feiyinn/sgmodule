@@ -388,3 +388,41 @@ export class LoonClient extends SurgeClient {
     return params
   }
 }
+
+export class ShadowrocketClient extends Client {
+  protected setFn<T>(t: T, p: string, newValue: any, receiver: any): boolean {
+    if (p === 'bodyBytes') {
+      newValue = this.transferBodyBytes(newValue, 'Uint8Array')
+    }
+    return super.setFn(t, p, newValue, receiver)
+  }
+
+  getVal(key: string): string | null | undefined {
+    return $persistentStore.read(key)
+  }
+
+  setVal(val: string, key: string): void {
+    $persistentStore.write(val, key)
+  }
+
+  msg(
+    title: string = this.name,
+    subTitle: string = '',
+    desc: string = '',
+    url?: string
+  ): void {
+    $notification.post(title, subTitle, desc)
+  }
+
+  async fetch(request: CFetchRequest): Promise<CFetchResponse> {
+    return new Promise((resolve) => {
+      $httpClient.fetch(request).then(resp => {
+        resolve({
+          status: resp.status,
+          headers: resp.headers,
+          bodyBytes: resp.bodyBytes
+        })
+      })
+    })
+  }
+}

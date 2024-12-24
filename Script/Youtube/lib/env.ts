@@ -1,3 +1,10 @@
 import Client from './client'
 
-export const $ = Client.getInstance('YouTube')
+let $ 
+if (typeof $rocket !== 'undefined') {
+  $ = new ShadowrocketClient('YouTube')
+} else {
+  $ = new SurgeClient('YouTube') 
+}
+
+export { $ }
